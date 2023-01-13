@@ -24,14 +24,14 @@ const emailForgetPassword = async (datos:dataMail) => {
   //Enviar el email
 
   const info = await transporter.sendMail({
-    from: "AMATEC - Administrador de Ventas",
+    from: "APV - Administrador de pacientes veterinaria",
     to: email,
     subject: "Reestablece tu Password",
     text: "Reestablece tu Password",
     html: `<p>Hola: ${name}, has solicitado reestablecer tu password.</p>
 
         <p>Sigue el siguiente enlace para generar un nuevo password:
-        <a href="${process.env.FRONTEND_URL}/auth/newPassword/${token}">Reestablecer Password</a> </p>
+        <a href="${process.env.FRONTEND_URL}/new-password/${token}">Reestablecer Password</a> </p>
 
         <p>Si tu no creaste esta cuenta, puedes ignorar este mensaje</p>
     `,

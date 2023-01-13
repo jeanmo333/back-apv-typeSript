@@ -15,6 +15,11 @@ const patientsSchema = new mongoose.Schema<IPatient>(
       type: String,
       required: true,
     },
+    date: {
+      type: Date,
+      required: true,
+      default: Date.now(),
+    },
     isActive: {
       type: Boolean,
       default: true,

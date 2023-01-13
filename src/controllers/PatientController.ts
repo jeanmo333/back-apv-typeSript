@@ -25,7 +25,7 @@ export class PatientController {
     newPatient.user = req.user;
     try {
       await newPatient.save();
-      return res.status(201).json(newPatient);
+      return res.status(201).json({newPatient, msg: "Agregado con exito" });
     } catch (error) {
       console.log(error);
       const e = new Error("revisar log servidor");
@@ -90,7 +90,7 @@ export class PatientController {
       return res.status(400).json({ msg: e.message });
     }
 
-    return res.json(patient);
+    return res.json({patient});
   }
 
   //********************************************************************** */
@@ -128,9 +128,8 @@ export class PatientController {
     patient.isActive = isActive;
 
     try {
-      const patientUpdate = await patient.save();
-
-      return res.json({ patientUpdate, message: "Editado con exito" });
+      const patientUpdate =  await patient.save();
+      return res.json({ patientUpdate, msg: "Editado con exito" });
     } catch (error) {
       console.log(error);
       const e = new Error("revisar log servidor");

@@ -6,7 +6,7 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 export interface dataMail {
   email:string
   name:string
-  token:string
+  token:string | undefined
 }
 
 
@@ -26,13 +26,13 @@ const emailRegister = async (data:dataMail) => {
   //Enviar el email
 
   const info = await transporter.sendMail({
-    from: "AMATEC - Administrador de ventas ",
+    from: "APV - Administrador de pacientes veterinaria ",
     to: email,
-    subject: "Comprueba tu cuenta en AMATEC",
-    text: "Comprueba tu cuenta en AMATEC",
+    subject: "Comprueba tu cuenta en APV",
+    text: "Comprueba tu cuenta en APV",
     html: `<p>Hola: ${name}, comprueba tu cuenta en AMATEC.</p>
         <p>Tu cuenta ya esta lista, solo debes comprobarla en el siguiente enlace:
-        <a href="${process.env.FRONTEND_URL}/auth/confirmAccount/${token}">Comprobar Cuenta</a> </p>
+        <a href="${process.env.FRONTEND_URL}/confirm-account/${token}">Comprobar Cuenta</a> </p>
 
         <p>Si tu no creaste esta cuenta, puedes ignorar este mensaje</p>
     `,

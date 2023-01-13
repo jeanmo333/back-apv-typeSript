@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import bcrypt, { hash, hashSync } from "bcrypt";
+import bcrypt, { hash} from "bcrypt";
 import jwt from "jsonwebtoken";
-import generarId from "../helpers/generarId";
 import emailForgetPassword from "../helpers/emailForgetPassword";
 import emailRegister from "../helpers/emailRegister";
 import { IUser } from "../interfaces/user";
 import User from "../entities/User";
+import genarateId from "../helpers/genarateId";
 
 
 export class UserController {
@@ -17,6 +17,7 @@ export class UserController {
       phone = "",
       address = "",
       web = "",
+      roles="client"
     } = req.body;
 
     if ([name, email, password].includes("")) {
@@ -40,16 +41,19 @@ export class UserController {
         phone,
         address,
         web,
+        roles
       });
-      const userSave = await newUser.save();
-      // send email
-      //   emailRegister({
-      //     email,
-      //     name,
-      //     token: newUser.token,
-      //   });
+      await newUser.save();
 
-      return res.json(userSave);
+     // send email
+        emailRegister({
+          email,
+          name,
+          token: newUser.token,
+        });
+
+    
+      return res.status(200).json({ msg: "Reviasa tu email para comfirmar tu cuenta" });
     } catch (error) {
       console.log(error);
       const e = new Error("hubo un error");
@@ -185,7 +189,7 @@ export class UserController {
       return res.status(400).json({ msg: e.message });
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_PASS ?? "", {
+    const token = jwt.sign({ id: user.id }, process.env.JWT_PASS!, {
       expiresIn: "8h",
     });
 
@@ -219,7 +223,7 @@ export class UserController {
       userConfirm.isActive = true;
       await userConfirm.save();
 
-      res.json({ message: "Usuario Confirmado Con Exito" });
+    return  res.json({ msg: "Cuenta Confirmado Con Exito" });
     } catch (error) {
       console.log(error);
       const e = new Error("hubo un error");
@@ -239,17 +243,17 @@ export class UserController {
     }
 
     try {
-      userExist.token = generarId();
+      userExist.token = genarateId();
       await userExist.save();
 
       // Enviar Email con instrucciones
-      //   emailForgetPassword({
-      // 	email,
-      // 	name: userExist.name,
-      // 	token: userExist.token,
-      //   });
+        emailForgetPassword({
+      	email,
+      	name: userExist.name,
+      	token: userExist.token,
+        });
 
-      res.json({ message: "Hemos enviado un email con las instrucciones" });
+      res.json({ msg: "Hemos enviado un email con las instrucciones" });
     } catch (error) {
       console.log(error);
       const e = new Error("hubo un error");
@@ -289,7 +293,7 @@ export class UserController {
       user.token = "";
       user.password = await hash(password, 10);
       await user.save();
-      res.json({ message: "Password modificado con exito" });
+      res.json({ msg: "Password modificado con exito" });
     } catch (error) {
       console.log(error);
       const e = new Error("hubo un error");
