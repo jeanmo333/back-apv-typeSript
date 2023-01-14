@@ -24,7 +24,7 @@ router.put("/update-password",new UserController().updatePassword );
 
 router.use(isAdmin)
 // router.post('/admin', new UserController().createByAdmin)
-// router.get("/admin", new UserController().getAllUsersByAdmin)
+ router.get("/admin", new UserController().getAllUsersByAdmin)
 // router.put("/admin/:id", new UserController().updateUserByAdmin)
 
 

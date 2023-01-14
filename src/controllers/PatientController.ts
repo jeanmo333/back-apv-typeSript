@@ -7,7 +7,7 @@ export class PatientController {
   async create(req: Request, res: Response) {
     const { name = "", owner = "", email = "", symptoms = "" } = req.body;
 
-    const nameToSave = name.toLowerCase();
+    const nameToSave = name.toLowerCase().trim();
 
     if ([name, owner, email, symptoms].includes("")) {
       const e = new Error("Hay Campo vacio");

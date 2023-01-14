@@ -20,13 +20,15 @@ export class UserController {
       roles="client"
     } = req.body;
 
+
+   const emailReq=email.toLowerCase().trim();
+
     if ([name, email, password].includes("")) {
       const e = new Error("Hay Campo vacio");
       return res.status(400).json({ msg: e.message });
     }
 
-    const userExists = await User.findOne({ email });
-
+    const userExists = await User.findOne({ email:emailReq });
     if (userExists) {
       const e = new Error("Usuario ya existe");
       return res.status(400).json({ msg: e.message });
@@ -36,7 +38,7 @@ export class UserController {
       const hashPassword = await bcrypt.hash(password, 10);
       const newUser = new User({
         name,
-        email,
+        email:emailReq,
         password: hashPassword,
         phone,
         address,
@@ -47,7 +49,7 @@ export class UserController {
 
      // send email
         emailRegister({
-          email,
+          email:emailReq,
           name,
           token: newUser.token,
         });
@@ -117,23 +119,24 @@ export class UserController {
 
   /*********************************************************************/
 
-  // async getAllUsersByAdmin(req: Request, res: Response) {
-  //   const { limit = 10, offset = 0 } = req.query;
-  //   try {
-  //     const users = await userRepository.find({
-  //       where: {
-  //         isActive: true,
-  //       },
-  //       take: Number(limit),
-  //       skip: Number(offset),
-  //     });
+  async getAllUsersByAdmin(req: Request, res: Response) {
+    const { limit = 10, offset = 0 } = req.query;
+    try {
+      const users = await User.find({
+        where: {
+          isActive: true,
+        },
+        take: Number(limit),
+        skip: Number(offset),
+      });
 
-  //     return res.json(users);
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw new BadRequestError("revisar log servidor");
-  //   }
-  // }
+      return res.json(users);
+    } catch (error) {
+      console.log(error);
+      const e = new Error("revisar log servidor");
+      return res.status(400).json({ msg: e.message });
+    }
+  }
   /***************************************************************************** */
   // async updateUserByAdmin(req: Request, res: Response) {
   // const { id } = req.params;
@@ -166,12 +169,14 @@ export class UserController {
   async login(req: Request, res: Response) {
     const { email = "", password = "" } = req.body;
 
+    const emailReq=email.toLowerCase().trim();
+
     if ([email, password].includes("")) {
       const e = new Error("Hay Campo vacio");
       return res.status(400).json({ msg: e.message });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email:emailReq });
     if (!user) {
       const e = new Error("Email o password no valido");
       return res.status(400).json({ msg: e.message });
@@ -236,7 +241,9 @@ export class UserController {
   async forgetPassword(req: Request, res: Response) {
     const { email } = req.body;
 
-    const userExist = await User.findOne({ email });
+    const emailReq=email.toLowerCase().trim();
+
+    const userExist = await User.findOne({ email:emailReq });
     if (!userExist) {
       const e = new Error("El Usuario no existe");
       return res.status(400).json({ msg: e.message });
@@ -307,6 +314,8 @@ export class UserController {
     const { _id } = req.user as IUser;
     const { email, name, phone, address, web } = req.body;
 
+    const emailReq=email.toLowerCase().trim();
+
     const user = await User.findOne({ _id });
     if (!user) {
       const e = new Error("usuario no existe");
@@ -314,7 +323,7 @@ export class UserController {
     }
 
     if (user.email !== req.body.email) {
-      const existEmail = await User.findOne({ email });
+      const existEmail = await User.findOne({ email:emailReq });
 
       if (existEmail) {
         const e = new Error("Ese email ya existe");
@@ -324,7 +333,7 @@ export class UserController {
 
     try {
       user.name = name;
-      user.email = email;
+      user.email = email.toLowerCase().trim();
       user.phone = phone;
       user.address = address;
       user.web = web;
